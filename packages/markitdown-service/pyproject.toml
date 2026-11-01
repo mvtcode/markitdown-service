@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "markitdown-service"
+dynamic = ["version"]
+description = "HTTP REST API and Asynchronous Queue Service for MarkItDown with LLM Vision OCR and Webhook Notifications"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  { name = "MarkItDown Contributors" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+  "markitdown>=0.1.9",
+  "markitdown-ocr>=0.1.0",
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.7.0",
+  "pydantic-settings>=2.2.0",
+  "python-multipart>=0.0.9",
+  "httpx>=0.27.0",
+  "openai>=1.40.0",
+  "redis>=5.0.0",
+  "celery>=5.4.0",
+]
+
+[project.scripts]
+markitdown-service = "markitdown_service.__main__:main"
+
+[tool.hatch.version]
+path = "src/markitdown_service/__about__.py"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/markitdown_service"]
+
