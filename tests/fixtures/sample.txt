@@ -1,0 +1,3 @@
+# Báo Cáo Kỹ Thuật
+
+Đây là tệp tin văn bản thuần túy kiểm tra tính năng chuyển đổi.

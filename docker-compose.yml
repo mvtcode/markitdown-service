@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: markitdown-api
+    restart: always
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - API_AUTH_TOKEN=${API_AUTH_TOKEN}
+      - REDIS_URL=redis://redis:6379/0
+      - QUEUE_MODE=celery
+      - STORAGE_DIR=/app/storage_data
+      - DEFAULT_LLM_API_KEY=${DEFAULT_LLM_API_KEY}
+      - DEFAULT_LLM_BASE_URL=${DEFAULT_LLM_BASE_URL}
+      - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-gpt-4o}
+    volumes:
+      - storage_data:/app/storage_data
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: markitdown-worker
+    restart: always
+    command: ["celery", "-A", "markitdown_service.queue.celery_app", "worker", "--loglevel=info", "--concurrency=4"]
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - QUEUE_MODE=celery
+      - STORAGE_DIR=/app/storage_data
+      - DEFAULT_LLM_API_KEY=${DEFAULT_LLM_API_KEY}
+      - DEFAULT_LLM_BASE_URL=${DEFAULT_LLM_BASE_URL}
+      - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-gpt-4o}
+    volumes:
+      - storage_data:/app/storage_data
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: markitdown-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  storage_data:
+  redis_data:
+
